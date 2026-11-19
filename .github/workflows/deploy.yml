@@ -1,0 +1,351 @@
+name: Build TaskFlow Studio Page
+
+on:
+  workflow_dispatch:
+    inputs:
+      business_name:
+        description: 'Business / Full Name'
+        required: true
+        default: 'Apex Dental Care'
+      business_email:
+        description: 'Email Address'
+        required: true
+        default: 'contact@apexdentalcare.example.com'
+      business_phone:
+        description: 'Phone Number'
+        required: true
+        default: '+1 (512) 555-0194'
+      business_website:
+        description: 'Website URL'
+        required: true
+        default: 'https://apexdentalcare.example.com'
+      business_address:
+        description: 'Street Address'
+        required: true
+        default: '742 Evergreen Terrace, Suite 200'
+      business_cityzip:
+        description: 'City, State & ZIP'
+        required: true
+        default: 'Austin, TX 78701'
+      business_category:
+        description: 'Category / Niche'
+        required: true
+        default: 'Dentist / Healthcare Clinic'
+      business_desc:
+        description: 'Short Description'
+        required: true
+        default: 'Family and cosmetic dental clinic offering care in Austin.'
+      target_urls:
+        description: 'Comma-separated Target Form/Directory URLs'
+        required: true
+        default: 'https://www.hotfrog.com/add-business,https://www.brownbook.net/business/add'
+
+permissions:
+  contents: write
+
+jobs:
+  build-page:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Generate Material Flat TaskFlow Page
+        run: |
+          cat << 'EOF' > index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>TaskFlow Studio</title>
+            <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+            <style>
+              :root {
+                --bg: #ffffff;
+                --surface: #f9f9f9;
+                --chip: #f2f2f2;
+                --chip-active: #0f0f0f;
+                --text: #0f0f0f;
+                --muted: #606060;
+                --border: #e5e5e5;
+                --red: #cc0000;
+                --blue: #065fd4;
+              }
+              * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+              body { background: var(--surface); color: var(--text); }
+              header {
+                height: 56px;
+                background: var(--bg);
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 20px;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+              }
+              .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+              .logo-box {
+                background: var(--red);
+                color: #fff;
+                padding: 3px 8px;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 700;
+              }
+              .chips {
+                background: var(--bg);
+                border-bottom: 1px solid var(--border);
+                padding: 10px 20px;
+                display: flex;
+                gap: 8px;
+                overflow-x: auto;
+              }
+              .chip {
+                height: 32px;
+                padding: 0 14px;
+                border-radius: 8px;
+                border: none;
+                background: var(--chip);
+                color: var(--text);
+                font-size: 13px;
+                font-weight: 500;
+                cursor: pointer;
+              }
+              .chip.active { background: var(--chip-active); color: #fff; }
+              .wrap {
+                max-width: 1120px;
+                margin: 20px auto;
+                padding: 0 20px;
+                display: grid;
+                grid-template-columns: 1.2fr 0.8fr;
+                gap: 16px;
+              }
+              .card {
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+              }
+              .card-title { font-size: 16px; font-weight: 500; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+              .item-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                padding: 10px 12px;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+              }
+              .item-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+              .item-label { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; }
+              .item-val { font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+              .btn-group { display: flex; gap: 6px; flex-shrink: 0; }
+              .btn {
+                height: 32px;
+                padding: 0 12px;
+                border-radius: 16px;
+                border: 1px solid var(--border);
+                background: var(--bg);
+                color: var(--text);
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+              }
+              .btn:hover { background: var(--chip); }
+              .btn.dark { background: var(--chip-active); color: #fff; border-color: var(--chip-active); }
+              .btn.blue { background: #def1ff; color: var(--blue); border-color: transparent; }
+              .bookmarklet {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                height: 36px;
+                padding: 0 16px;
+                border-radius: 18px;
+                background: var(--blue);
+                color: #fff;
+                text-decoration: none;
+                font-size: 13px;
+                font-weight: 500;
+                width: fit-content;
+                cursor: grab;
+              }
+              @media (max-width: 860px) { .wrap { grid-template-columns: 1fr; } }
+            </style>
+          </head>
+          <body>
+            <header>
+              <div class="brand"><span class="logo-box">TF</span><span>TaskFlow Studio</span></div>
+              <span style="font-size:12px; color:#606060;" id="counterText">0 / 8 Done</span>
+            </header>
+
+            <div class="chips">
+              <button class="chip active" onclick="filterMode('all', this)">All Fields</button>
+              <button class="chip" onclick="filterMode('pending', this)">Pending Only</button>
+              <button class="chip" onclick="resetTicks()">Reset Ticks</button>
+            </div>
+
+            <div class="wrap">
+              <div class="card" id="fieldsCard">
+                <div class="card-title">Guided Fill & One-Click Copy</div>
+                <div id="fieldsList" style="display:flex; flex-direction:column; gap:8px;"></div>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div class="card">
+                  <div class="card-title">1-Click External Form Auto-Fill</div>
+                  <p style="font-size:12px; color:#606060; line-height:1.4;">
+                    नीचे दिए नीले बटन को अपने ब्राउज़र के Bookmarks Bar में खींचकर रखें। किसी भी फ़ॉर्म पेज पर जाकर इसे क्लिक करें—बॉक्स अपने आप भर जाएंगे:
+                  </p>
+                  <a id="autoFillLink" class="bookmarklet" href="#">⚡ Auto-Fill Form</a>
+                </div>
+
+                <div class="card">
+                  <div class="card-title">Target Pages Queue</div>
+                  <div id="queueList" style="display:flex; flex-direction:column; gap:8px;"></div>
+                </div>
+              </div>
+            </div>
+
+            <script>
+              const payload = {
+                name: "${{ inputs.business_name }}",
+                email: "${{ inputs.business_email }}",
+                phone: "${{ inputs.business_phone }}",
+                website: "${{ inputs.business_website }}",
+                address: "${{ inputs.business_address }}",
+                cityzip: "${{ inputs.business_cityzip }}",
+                category: "${{ inputs.business_category }}",
+                desc: "${{ inputs.business_desc }}"
+              };
+
+              const defs = [
+                { key: "name", label: "1. Business / Full Name" },
+                { key: "email", label: "2. Email Address" },
+                { key: "phone", label: "3. Phone Number" },
+                { key: "website", label: "4. Website URL" },
+                { key: "address", label: "5. Street Address" },
+                { key: "cityzip", label: "6. City, State & ZIP" },
+                { key: "category", label: "7. Category / Niche" },
+                { key: "desc", label: "8. Description" }
+              ];
+
+              let ticks = {};
+              let mode = "all";
+
+              function renderFields() {
+                const box = document.getElementById("fieldsList");
+                box.innerHTML = "";
+                let doneCount = 0;
+
+                defs.forEach(d => {
+                  const isTicked = !!ticks[d.key];
+                  if (isTicked) doneCount++;
+                  if (mode === "pending" && isTicked) return;
+
+                  const row = document.createElement("div");
+                  row.className = "item-row";
+                  row.innerHTML = `
+                    <div class="item-meta">
+                      <span class="item-label">${d.label}</span>
+                      <span class="item-val">${payload[d.key]}</span>
+                    </div>
+                    <div class="btn-group">
+                      <button class="btn" onclick="copyVal('${encodeURIComponent(payload[d.key])}', this)">Copy</button>
+                      <button class="btn ${isTicked ? 'dark' : ''}" onclick="toggleTick('${d.key}')">${isTicked ? '✓ Done' : 'Tick'}</button>
+                    </div>
+                  `;
+                  box.appendChild(row);
+                });
+
+                document.getElementById("counterText").textContent = `${doneCount} / ${defs.length} Done`;
+              }
+
+              function copyVal(encoded, btn) {
+                navigator.clipboard.writeText(decodeURIComponent(encoded));
+                const prev = btn.textContent;
+                btn.textContent = "Copied";
+                setTimeout(() => btn.textContent = prev, 800);
+              }
+
+              function toggleTick(key) {
+                ticks[key] = !ticks[key];
+                renderFields();
+              }
+
+              function resetTicks() {
+                ticks = {};
+                renderFields();
+              }
+
+              function filterMode(m, el) {
+                mode = m;
+                document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+                if (el) el.classList.add("active");
+                renderFields();
+              }
+
+              const urls = "${{ inputs.target_urls }}".split(",").map(s => s.trim()).filter(Boolean);
+              const qBox = document.getElementById("queueList");
+              urls.forEach((u, i) => {
+                const row = document.createElement("div");
+                row.className = "item-row";
+                row.innerHTML = `
+                  <div class="item-meta">
+                    <span class="item-label">Target #${i + 1}</span>
+                    <span class="item-val">${u}</span>
+                  </div>
+                  <button class="btn blue" onclick="window.open('${u}', '_blank')">Open</button>
+                `;
+                qBox.appendChild(row);
+              });
+
+              const bmScript = `(function(){
+                const d = ${JSON.stringify(payload)};
+                const map = [
+                  {k:['name','business','company','title'], v:d.name},
+                  {k:['email','mail'], v:d.email},
+                  {k:['phone','tel','mobile'], v:d.phone},
+                  {k:['web','url','site'], v:d.website},
+                  {k:['address','street','addr'], v:d.address},
+                  {k:['city','zip','postal'], v:d.cityzip},
+                  {k:['cat','niche','tag'], v:d.category},
+                  {k:['desc','about','bio'], v:d.desc}
+                ];
+                let count = 0;
+                document.querySelectorAll('input, textarea').forEach(el => {
+                  if (el.type==='hidden'||el.type==='submit'||el.disabled) return;
+                  const h = (el.name+' '+el.id+' '+el.placeholder+' '+(el.getAttribute('aria-label')||'')).toLowerCase();
+                  for (const item of map) {
+                    if (item.k.some(w => h.includes(w)) && !el.value) {
+                      el.value = item.v;
+                      el.dispatchEvent(new Event('input', {bubbles:true}));
+                      el.dispatchEvent(new Event('change', {bubbles:true}));
+                      count++;
+                      break;
+                    }
+                  }
+                });
+                alert('TaskFlow: ' + count + ' fields filled. Solve CAPTCHA/OTP if shown and submit.');
+              })();`;
+              document.getElementById("autoFillLink").href = "javascript:" + encodeURIComponent(bmScript);
+
+              renderFields();
+            </script>
+          </body>
+          </html>
+          EOF
+
+      - name: Commit & Push index.html
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --staged --quiet || git commit -m "Update TaskFlow Studio page"
+          git push
